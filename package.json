@@ -1,0 +1,19 @@
+{
+  "name": "mm-200-ny-server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "me",
+  "license": "ISC",
+  "keywords": [
+    "joke",
+    "server"
+  ],
+  "description": "",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

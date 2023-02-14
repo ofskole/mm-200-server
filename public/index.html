@@ -1,0 +1,64 @@
+<!-- set up html sheet with 3 buttons, English, Norwegian and Swedish -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Language</title>
+</head>
+
+<body>
+    <div id="container">
+        <button id="english">English</button>
+        <button id="norwegian">Norwegian</button>
+        <button id="swedish">Swedish</button>
+        <p id="text"></p>
+    </div>
+
+
+    <script>
+
+        let text = document.getElementById('text');
+
+        let btnEnglish = document.getElementById('english');
+        let btnNorwegian = document.getElementById('norwegian');
+        let btnSwedish = document.getElementById('swedish');
+
+        btnEnglish.addEventListener('click', function() {
+            getLanguage(this.id);
+        });
+
+        btnNorwegian.addEventListener('click', function() {
+            getLanguage(this.id);
+        });
+
+        btnSwedish.addEventListener('click', function() {
+            getLanguage(this.id);
+        });
+
+
+        async function getLanguage(Language) {
+            let url = "/language";
+            let options = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({language: Language})
+            };
+
+            let response = await fetch(url, options);
+            let data = await response.json();
+
+            if (response.ok)
+                text.innerHTML = data.joke;
+            else
+                text.innerHTML = data.error;
+        }
+        
+
+    </script>
+
+</body>
+
+</html>

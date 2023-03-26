@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile</title>
+</head>
+
+<body>
+
+    <div id="container">
+        <h1 id="h1"></h1>
+        <h2 id="h2"></h2>
+    </div>
+
+
+    <script>
+
+        let languageData = localStorage.getItem("language");
+        let language = JSON.parse(languageData);
+
+        let container = document.getElementById("container");
+        let h1 = document.getElementById("h1");
+        let div = document.createElement("div");
+        let h2 = document.createElement("h2");
+        let token = localStorage.getItem("token");
+
+        let btnLogout = document.createElement("button");
+        btnLogout.innerHTML = language.logout;
+        btnLogout.id = "logout";
+        container.appendChild(btnLogout);
+
+        btnLogout.addEventListener("click", function() {
+            localStorage.removeItem("token");
+            window.location.href = "/index.html";
+        });
+
+        let button = document.createElement("button");
+        button.innerHTML = language.btnadditem;
+        button.id = "newItem";
+        container.appendChild(button);
+
+        button.addEventListener("click", function() {
+                window.location.href = "/newItem.html";
+            });
+
+        async function getUserInfo() {
+
+            try{
+
+            let url = "/profile";
+            let cfg = {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": token
+                }
+            };
+
+            let response = await fetch(url, cfg);
+            let data = await response.json();
+
+            if (response.status != 200) {
+                h2.innerHTML = "Error: " + data.error;
+                container.appendChild(h2);
+                return;
+            }
+
+            h1.innerHTML = language.profileh1 + data.user + "!";
+
+
+            let role = data.role;
+
+            if (role == "admin") {
+                let adminButton = document.createElement("button");
+                adminButton.innerHTML = language.btnadmin;
+                adminButton.id = "moderation";
+                container.appendChild(adminButton);
+                adminButton.addEventListener("click", function() {
+                    window.location.href = "/moderation.html";
+                });
+            }
+
+            if (role != "admin") {
+                let publicButton = document.createElement("button");
+                publicButton.innerHTML = language.btnpublic;
+                container.appendChild(publicButton);
+                publicButton.addEventListener("click", function() {
+                    window.location.href = "/public.html";
+                });
+            }
+
+            getUserList();
+
+        }
+            
+            catch (error) {
+                h2.innerHTML = "Error: " + error;
+                container.appendChild(h2);
+            }
+        }
+        
+        getUserInfo();
+
+
+
+        async function getUserList() {
+
+            try{
+
+                let url = "/list";
+                let cfg = {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "authorization": token
+                    }
+                };
+
+                let response = await fetch(url, cfg);
+                let data = await response.json();
+
+                if (response.status != 200) {
+                    h2.innerHTML = language.nolistfound;
+                    container.appendChild(h2);
+                    return;
+                } else {
+                    h2.innerHTML = language.profileh2;
+                    container.appendChild(h2);
+                }
+
+                data.forEach(row => {
+
+                    let today = new Date();
+                    let date = new Date(row.date);
+                    let localDate = date.toLocaleDateString();
+                    let div = document.createElement("div");
+                    let btnEdit = document.createElement("button");
+                    let btnDelete = document.createElement("button");
+                    btnEdit.innerHTML = language.btnedit;
+                    btnDelete.innerHTML = language.btndelete;
+
+                    div.innerHTML += "<h4>" + row.heading + "</h4>";
+                    div.innerHTML += "<p>" + row.details + "</p>";
+                    if (localDate != "Invalid Date") {
+                        div.innerHTML += "<p>" + language.duedate + localDate + "</p>";
+                    } else {
+                        div.innerHTML += "<p>" + language.duedate + language.nodate + "</p>";
+                    }
+                    div.appendChild(btnDelete);
+                    div.appendChild(btnEdit);
+
+                    if (date < today && row.public != "completed") {
+                        div.style.backgroundColor = "red";
+                    } else if (row.public == "completed") {
+                        div.style.backgroundColor = "green";
+                    } else if (today > date.setDate(date.getDate() - 3)) {
+                        div.style.backgroundColor = "orange";
+                    } else if (today > date.setDate(date.getDate() - 7)) {
+                        div.style.backgroundColor = "yellow";
+                    } else if (today > date.setDate(date.getDate() - 365)) {
+                        div.style.backgroundColor = "lightblue";
+                    }
+                    container.appendChild(div);
+
+                    btnEdit.addEventListener('click', function(evt) {
+                        localStorage.setItem("title", row.heading);
+                        localStorage.setItem("details", row.details);
+                        localStorage.setItem("date", localDate);
+                        localStorage.setItem("id", row.id);
+                        window.location.href = "/editItem.html";
+                    });
+
+                    btnDelete.addEventListener('click', function(evt) {
+                        let id = row.id;
+                        deleteItem(id);
+                    });
+                });
+            }
+                
+                catch (error) {
+                    h2.innerHTML = "Error: " + error;
+                    container.appendChild(h2);
+                }
+            }
+
+
+
+
+        async function deleteItem(id) {
+                
+                try{
+    
+                    let url = "/deleteItem";
+                    let itemId = id;
+                    let cfg = {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "authorization": token
+                        },
+                        body: JSON.stringify({
+                            id: itemId
+                        })
+                    };
+    
+                    let response = await fetch(url, cfg);
+                    let data = await response.json();
+    
+                    if (response.status != 200) {
+                        h2.innerHTML = "Error: " + data.error;
+                        container.appendChild(h2);
+                        return;
+                    }
+                    window.location.href = "/profile.html";
+    
+                }
+                    
+                    catch (error) {
+                        h2.innerHTML = "Error: " + error;
+                        container.appendChild(h2);
+                    }
+                }
+
+
+    </script>
+
+    <style>
+
+        @media (min-width: 768px) {
+            #container {
+                width: 80%;
+                margin: 0 auto;
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #container {
+                width: 100%;
+                margin: 0 auto;
+            }
+        }
+
+        div {
+            border: 15px solid black;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        h1 {
+            font-size: 50px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 30px;
+            padding-left: 10px;
+        }
+
+        button {
+            float: right;
+            border: 3px solid black;
+            background-color: white;
+        }
+
+
+    </style>
+
+</body>

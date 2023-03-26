@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>New List Item.</title>
+</head>
+
+<body>
+
+    <div id="container">
+        <h1 id="h1"></h1>
+        <button id="btnProfile"></button>
+        <input type="text" id="heading" placeholder="Header">
+        <textarea id="description" type="text" placeholder="Details"></textarea>
+        <p id="dueDateTEXT"></p>
+        <p><input type="date" id="dueDate"></p>
+        <form action="/action_page.php">
+            <label for="status"></label>
+            <select name="status" id="status">
+                <option value="private"></option>
+                <option value="public"></option>
+            </select>
+        </form>
+        <button id="btnAddItem"></button>
+        <h3 id="result"></h3>
+    </div>
+
+
+    <script>
+
+        let languageData = localStorage.getItem("language");
+        let language = JSON.parse(languageData);
+
+        let heading = document.getElementById("heading");
+        heading.value = language.headerplaceholder;
+        let description = document.getElementById("description");
+        description.value = language.descriptionplaceholder;
+
+        let result = document.getElementById("result");
+        let dueDate = document.getElementById("dueDate");
+        let status = document.getElementById("status");
+        let token = localStorage.getItem("token");
+
+        let h1 = document.getElementById("h1");
+        h1.innerHTML = language.newitemh1;
+
+        let statusLabel = document.querySelector("label[for='status']");
+        statusLabel.textContent = language.statuslabelnew;
+
+        let statusOptions = document.querySelectorAll("#status option");
+        statusOptions[0].textContent = language.statusoptionprivate;
+        statusOptions[1].textContent = language.statusoptionpublic;
+        let p = document.getElementById("dueDateTEXT");
+        p.innerHTML = language.duedate;
+
+        let btnProfile = document.getElementById("btnProfile");
+        btnProfile.innerHTML = language.btnprofile;
+
+        btnProfile.addEventListener("click", function() {
+            window.location.href = "/profile.html";
+        });
+
+        let btnAddItem = document.getElementById("btnAddItem");
+        btnAddItem.innerHTML = language.btncreate;
+
+        
+        btnAddItem.addEventListener('click', async function(evt) {
+
+            let url = "/list";
+
+            let updata = {
+                inputHeading: heading.value,
+                inputDescription: description.value,
+                dueDate: dueDate.value,
+                publicStatus: status.value
+            };
+
+            let cfg = {
+                method: "POST",
+                headers: {
+                    "content-Type":"application/json",
+                    "authorization":token
+                },
+                body: JSON.stringify(updata)
+            };
+
+            try {
+                let response = await fetch(url, cfg);
+                let data = await response.json();
+
+                if (response.status != 200) {
+                    throw data.error;
+                }
+                
+                window.location.href = "/profile.html";
+            }
+            catch(error) {
+                result.innerHTML = result.innerHTML = error;
+            }
+        });
+
+    </script>
+
+    <style>
+
+        div {
+            border: 15px solid black;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        h1 {
+            font-size: 50px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 30px;
+            padding-left: 10px;
+        }
+
+        button {
+            float: right;
+            border: 3px solid black;
+            background-color: white;
+        }
+
+        #heading {
+            width: 80%;
+            height: 25px;
+            border: 2px solid black;
+            background-color: white;
+            margin-bottom: 10px;
+        }
+
+        #description {
+            width: 80%;
+            height: 300px;
+            border: 2px solid black;
+            background-color: white;
+        }
+
+        #status {
+            border: 2px solid black;
+            background-color: white;
+        }
+
+        #btnProfile {
+            border: 3px solid black;
+            float: right;
+            margin-top: -50px;
+            width: 60px;
+            height: 30px;
+
+        }
+
+</style>
+
+</body>

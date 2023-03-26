@@ -2,60 +2,204 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Language</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ToDoList - Sign In</title>
 </head>
 
 <body>
-    <div id="container">
-        <button id="english">English</button>
-        <button id="norwegian">Norwegian</button>
-        <button id="swedish">Swedish</button>
-        <p id="text"></p>
+
+    <div>
+        <h1 id="h1">Sign in to your ToDo List</h1>
+        <button id ="english">English</button>
+        <button id ="norwegian">Norsk</button>
+        <br>
+        <input id = "inputUsername" type="text" placeholder="Username..">
+        <input id = "inputPassword" type="text" placeholder="Password..">
+        <button id = "btnLogin">Sign In</button>
+        <h3 id = "result"></h3>
+
+        <p id="p">Not already a member? Click to register!</p>
+        <button id = "btnRegister">Register</button>
     </div>
 
 
     <script>
 
-        let text = document.getElementById('text');
+        let inputUsername = document.getElementById("inputUsername");
+        let inputPassword = document.getElementById("inputPassword");
+        let btnLogin = document.getElementById("btnLogin");
+        let result = document.getElementById("result");
+        let btnRegister = document.getElementById("btnRegister");
+        let h1 = document.getElementById("h1");
+        let p = document.getElementById("p");
 
-        let btnEnglish = document.getElementById('english');
-        let btnNorwegian = document.getElementById('norwegian');
-        let btnSwedish = document.getElementById('swedish');
+        btnRegister.addEventListener('click', async function(evt) {
+            let language = localStorage.getItem("language");
+            if (language == null) {
+                chosenLanguage = "english";
+                getLanguage(chosenLanguage);
+            }
+            window.location.href = "/register.html";
+        });
 
-        btnEnglish.addEventListener('click', function() {
+        let norwegian = document.getElementById("norwegian");
+        let english = document.getElementById("english");
+
+        norwegian.addEventListener('click', function() {
             getLanguage(this.id);
         });
 
-        btnNorwegian.addEventListener('click', function() {
+        english.addEventListener('click', function() {
             getLanguage(this.id);
         });
-
-        btnSwedish.addEventListener('click', function() {
-            getLanguage(this.id);
-        });
-
 
         async function getLanguage(Language) {
-            let url = "/language";
-            let options = {
+
+            try{
+                let chosenLanguage = Language;
+
+                let url = "/language?language=" + chosenLanguage;
+                let cfg = {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                };
+
+                let response = await fetch(url, cfg);
+                let data = await response.json();
+
+                if (response.status != 200) {
+                    throw data.error;
+
+                }
+
+                h1.innerHTML = data.indexh1;
+                p.innerHTML = data.indexp;
+                inputUsername.placeholder = data.usernameplaceholder;
+                inputPassword.placeholder = data.passwordplaceholder;
+                btnLogin.innerHTML = data.btnlogin;
+                btnRegister.innerHTML = data.btnregister;
+
+                localStorage.setItem("language", JSON.stringify(data));
+
+
+            }
+            catch(error) {
+                result.innerHTML = error;
+
+            }
+        }
+
+
+
+        
+        btnLogin.addEventListener('click', async function(evt) {
+
+            let language = localStorage.getItem("language");
+
+            if (language == null) {
+                chosenLanguage = "english";
+                getLanguage(chosenLanguage);
+            }
+
+            let url = "/users/login";
+            let credString = createCredentialString(inputUsername.value, inputPassword.value);
+
+            let cfg = {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({language: Language})
+                headers: {"authorization":credString}
             };
 
-            let response = await fetch(url, options);
-            let data = await response.json();
+            
+            if (inputUsername.value.includes(":")) {
+                result.innerHTML = language.usernameerrorcolon;
+                return;
+            }
 
-            if (response.ok)
-                text.innerHTML = data.joke;
-            else
-                text.innerHTML = data.error;
-        }
+            try {
+                let response = await fetch(url, cfg);
+                let data = await response.json();
+
+                if (response.status != 200) {
+                    throw data.error;
+                }
+
+                localStorage.setItem("token", data.token);
+                window.location.href = "/profile.html";
+            }
+            catch(error) {
+                result.innerHTML = error;
+            }
+        });
+
+
         
 
+        function createCredentialString(username, password) {
+            let combinedStr = username + ":" + password;
+            let b64Str = btoa(combinedStr);
+            return "basic " + b64Str;
+        }
+
+
+
     </script>
+
+    <style>
+
+        div {
+            border: 15px solid black;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        h1 {
+            font-size: 50px;
+            text-align: center;
+        }
+
+        #result {
+            font-size: 30px;
+            padding-left: 10px;
+        }
+
+        button {
+            border: 3px solid black;
+            background-color: white;
+        }
+
+        #inputUsername {
+            border: 3px solid black;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+
+        #inputPassword {
+            box-sizing: border-box;
+            border: 3px solid black;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+
+        p {
+            font-size: 18px;
+        }
+
+        #norwegian {
+            float: right;
+        }
+
+        #english {
+            float: right;
+            margin-left: 10px;
+        }
+
+        #languageP {
+            float: right;
+        }
+
+    </style>
 
 </body>
 

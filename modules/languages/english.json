@@ -1,0 +1,46 @@
+{
+    "indexh1": "Sign in to your ToDo List",
+    "indexp": "Not already a member? Click to register!",
+    "btnlogin": "Sign in",
+    "usernameplaceholder": "Username..",
+    "passwordplaceholder": "Password..",
+
+    "btnregister": "Register",
+    "usernameerror3": "Username must be at least 3 characters.",
+    "usernameerrorcolon": "Username cannot contain a colon.",
+    "passworderror8": "Password must be at least 8 characters.",
+    "accountcreated": "Account created. Redirecting to login.",
+    "registerh1": "Register as a ToDoList user.",
+    "logout": "Logout",
+
+    "profileh1": "Welcome back, ",
+    "btnadditem": "Create New item",
+    "btnpublic": "Public Items",
+    "btnadmin": "Moderate Public Items",
+    "profileh2": "Your ToDo List:",
+
+    "btnedit": "Edit",
+    "btndelete": "Delete",
+    "duedate": "Due Date: ",
+
+    "newitemh1": "New List Item",
+    "btncreate": "Add item",
+    "statuslabelnew": "Go Public?",
+    "headerplaceholder": "Header..",
+    "descriptionplaceholder": "Description..",
+
+    "edith1": "Edit List Item",
+    "edit": "Add Edit",
+    "statuslabel": "Update List Item Status; Private, Public or Completed.",
+    "statusoptionprivate": "Keep private.",
+    "statusoptionpublic": "Go public.",
+    "statusoptioncompleted": "Item Completed!",
+
+    "publich1": "Public List Items",
+    "moderateh1": "Moderate Public List Items",
+    "btnprofile": "Profile",
+    "by": ", by: ",
+
+    "nolistfound": "No list items found. Try making one.",
+    "nodate": "No due date set."
+}

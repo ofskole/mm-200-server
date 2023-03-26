@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Moderation of public elements.</title>
+</head>
+
+<body>
+
+    <div id="container">
+        <h1 id="h1"></h1>
+        <h2 id="h2"></h2>
+        <button id="btnProfile"></button>
+    </div>
+
+
+    <script>
+
+        let languageData = localStorage.getItem("language");
+        let language = JSON.parse(languageData);
+
+        let container = document.getElementById("container");
+        let h1 = document.getElementById("h1");
+        h1.innerHTML = language.moderateh1;
+        let h2 = document.getElementById("h2");
+        let token = localStorage.getItem("token");
+        let btnProfile = document.getElementById("btnProfile");
+        btnProfile.innerHTML = language.btnprofile;
+
+        btnProfile.addEventListener("click", function() {
+            window.location.href = "/profile.html";
+        });
+
+        async function getPublicItems() {
+
+            try{
+                let url = "/publicAdmin";
+                let cfg = {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "authorization": token
+                    }
+                };
+
+                let response = await fetch(url,cfg);
+                let data = await response.json();
+
+                if (response.status != 200) {
+                    h2.innerHTML = "Error: " + data.error;
+                    container.appendChild(h2);
+                    return;
+                }
+
+                data.forEach(row => {
+
+                    let today = new Date();
+                    let date = new Date(row.date);
+                    let localDate = date.toLocaleDateString();
+                    let div = document.createElement("div");
+                    let username = row.username;
+
+                    div.innerHTML += "<h4>" + row.heading + "</h4>";
+                    div.innerHTML += "<p>" + row.details + "</p>";
+                    div.innerHTML += "<p>" + language.duedate + localDate + language.by + username + "</p>";
+                    let btnDelete = document.createElement("button");
+                    div.appendChild(btnDelete);
+                    btnDelete.innerHTML = language.btndelete;
+                    btnDelete.addEventListener("click", function() {
+                        let id = row.id;
+                        deleteItem(id);
+                    });
+
+                    container.appendChild(div);
+
+                });
+
+            } catch (error) {
+                h2.innerHTML = "Error: " + error;
+            }
+        }
+
+        getPublicItems();
+
+
+        async function deleteItem(id) {
+
+            try{
+                let itemId = id;
+                let url = "/deletePublicItemAdmin";
+                let cfg = {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "authorization": token
+                    },
+                    body: JSON.stringify({id: itemId})
+                };
+                let response = await fetch(url,cfg);
+                let data = await response.json();
+
+                if (response.status != 200) {
+                    h2.innerHTML = "Error: " + data.error;
+                    container.appendChild(h2);
+                    return;
+                }
+
+                location.reload();
+
+            } catch (error) {
+                h2.innerHTML = "Error: " + error;
+            }
+        }
+
+    </script>
+
+    <style>
+        @media (min-width: 768px) {
+            #container {
+                width: 80%;
+                margin: 0 auto;
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #container {
+                width: 100%;
+                margin: 0 auto;
+            }
+        }
+
+        div {
+            border: 15px solid black;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        h1 {
+            font-size: 50px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 30px;
+            padding-left: 10px;
+        }
+
+        button {
+            border: 3px solid black;
+        }
+
+        #btnProfile {
+            border: 3px solid black;
+            float: right;
+            margin-top: -50px;
+            width: 60px;
+            height: 30px;
+
+        }
+
+    </style>
+
+</body>

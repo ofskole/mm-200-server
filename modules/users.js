@@ -1,3 +1,5 @@
+// ----------------------- Routes for user stuff ----------------------- //
+
 const express = require("express");
 const db = require("./db.js");
 const authUtils = require("./auth_utils.js");
@@ -5,26 +7,21 @@ const protect = require("./auth.js");
 const router = express.Router();
 
 
-
+// Create user.
 router.post("/users", async function(req, res, next) {
-    let credString = req.headers.authorization;
-    let cred = authUtils.decodeCred(credString);
+    let credString = req.headers.authorization; // receive credentials
+    let cred = authUtils.decodeCred(credString); // decode credentials
 
-    if (cred.username == "" || cred.password == ""){
-        res.status(403).json({error: "Username and password are required."}).end();
-        return;
-    }
-
-    let hash = authUtils.createHash(cred.password);
+    let hash = authUtils.createHash(cred.password); // create hash and salt
 
     try{
-        let data = await db.createUser(cred.username, hash.value, hash.salt);
+        let data = await db.createUser(cred.username, hash.value, hash.salt); // send username, hash, and salt to db.js
 
-        if (data.rows.length > 0){
+        if (data.rows.length > 0){ // if user was created, send success.
             res.status(200).json({msg: "User was created. Redirecting..."}).end();
         }
 
-        else {
+        else { // if user was not created, whine.
             throw "User could not be created.";
         }
 
@@ -35,18 +32,14 @@ router.post("/users", async function(req, res, next) {
 });
 
 
+// Login user.
 router.post("/users/login", async function(req, res, next) {
 
-    let credString = req.headers.authorization;
-    let cred = authUtils.decodeCred(credString);
-
-    if (cred.username == "" || cred.password == ""){
-        res.status(403).json({error: "Username and password are required."}).end();
-        return;
-    }
+    let credString = req.headers.authorization; // receive credentials
+    let cred = authUtils.decodeCred(credString); // decode credentials
 
     try{
-        let data = await db.getUser(cred.username);
+        let data = await db.getUser(cred.username); // ask db.js function for information, send username
 
         let dbUserId = data.rows[0].id;
         let dbUsername = data.rows[0].username;
@@ -59,7 +52,7 @@ router.post("/users/login", async function(req, res, next) {
             return;
         }
 
-        if (authUtils.verifyPassword(inputPassword, dbHash, dbSalt)){
+        if (authUtils.verifyPassword(inputPassword, dbHash, dbSalt)){ // if input hash matches db hash, create token and send it to user.
             let token = authUtils.createToken(dbUsername, dbUserId);
             res.status(200).json({
                 token: token,
@@ -79,9 +72,10 @@ router.post("/users/login", async function(req, res, next) {
 });
 
 
+// Get user profile.
 router.get("/profile", protect, async function(req, res, next) {
 
-    let username = res.locals.username;
+    let username = res.locals.username; // get username from session
 
     try{
         let data = await db.getUser(username);
@@ -91,7 +85,7 @@ router.get("/profile", protect, async function(req, res, next) {
             return;
         }
         else{
-            res.status(200).json({
+            res.status(200).json({ //send username and role to client.
                 user: username,
                 role: data.rows[0].role
             }).end();
@@ -105,4 +99,4 @@ router.get("/profile", protect, async function(req, res, next) {
 
 
 
-module.exports = router;
+module.exports = router; // export router to server.js

@@ -8,6 +8,8 @@
 
 <body>
 
+    <!------------------------------ HTML ------------------------------>
+
     <div id="container">
         <h1 id="h1"></h1>
         <button id="btnProfile"></button>
@@ -27,7 +29,11 @@
     </div>
 
 
+    <!------------------------------ JavaScript ------------------------------>
+
     <script>
+
+        //variables, language
 
         let languageData = localStorage.getItem("language");
         let language = JSON.parse(languageData);
@@ -64,10 +70,12 @@
         let btnAddItem = document.getElementById("btnAddItem");
         btnAddItem.innerHTML = language.btncreate;
 
-        
-        btnAddItem.addEventListener('click', async function(evt) {
 
-            let url = "/list";
+        //add new item
+        
+        btnAddItem.addEventListener('click', async function(evt) { //listen for click on button
+
+            let url = "/list";              //url, information from input sections, token and method wrapped for request.
 
             let updata = {
                 inputHeading: heading.value,
@@ -86,14 +94,14 @@
             };
 
             try {
-                let response = await fetch(url, cfg);
-                let data = await response.json();
+                let response = await fetch(url, cfg); // request to server with above information.
+                let data = await response.json(); //data from server
 
-                if (response.status != 200) {
+                if (response.status != 200) { //if error
                     throw data.error;
                 }
                 
-                window.location.href = "/profile.html";
+                window.location.href = "/profile.html"; //if success, redirect to profile.
             }
             catch(error) {
                 result.innerHTML = result.innerHTML = error;
@@ -101,6 +109,9 @@
         });
 
     </script>
+
+
+    <!------------------------------ CSS ------------------------------>
 
     <style>
 

@@ -7,19 +7,24 @@
 </head>
 
 <body>
+
+    <!------------------------------ HTML ------------------------------>
+
     <div id = "container">
         <h1 id="h1"></h1>  
         <input id="inputUsername" type="text" placeholder="Username..">
         <input id="inputPassword" type="text" placeholder="Password.."><br>
         <button id ="btnCreate"></button>
     </div>
-
-
     
     <h3 id = "result"></h3>
 
+
+    <!------------------------------ JavaScript ------------------------------>
+
     <script>
 
+        //variables, language, eventlisteners.
         
         let languageData = localStorage.getItem("language");
         let language = JSON.parse(languageData);
@@ -35,10 +40,12 @@
         let result = document.getElementById("result");
 
         
+        //create user button click
+
         btnCreate.addEventListener('click', async function(evt) {
             evt.preventDefault();
 
-            if (inputUsername.value.length < 3) {
+            if (inputUsername.value.length < 3) {//check if username contains less than 3 characters or a colon, and password more than 8 characters.
                 result.innerHTML = language.usernameerror3;
                 return;
             }
@@ -53,12 +60,17 @@
                 return;
             }
 
+            if (cred.username == "" || cred.password == ""){
+                result.innerHTML = language.usernameblank;
+                return;
+            }
+
 
             let url = "/users";
-            let credString = createCredentialString(inputUsername.value, inputPassword.value);
+            let credString = createCredentialString(inputUsername.value, inputPassword.value); //creates the credential string we send to server
 
 
-            let cfg = {
+            let cfg = { //config object with credentials
                 
                 method: "POST",
                 headers: {
@@ -69,16 +81,16 @@
             };
 
             try {
-                let response = await fetch(url, cfg);
-                let data = await response.json();
+                let response = await fetch(url, cfg); // POST to url with credentials
+                let data = await response.json(); //answer
 
-                if (response.status != 200) {
+                if (response.status != 200) { //if error
                     throw data.error;
                 }
 
-                result.innerHTML = language.accountcreated;
+                result.innerHTML = language.accountcreated; //if success, account created message in chosen language.
 
-                setTimeout(function() {
+                setTimeout(function() { //redirects to index for login after 2 seconds.
                     window.location.href = "/index.html";
                 }, 2000);
             }
@@ -88,6 +100,8 @@
         });
 
 
+        // createCredentialString function creates a string for login, username and password combined with ":". Encodes to base64 and adds "basic ".
+
         function createCredentialString(username, password) {
             let combinedStr = username + ":" + password;
             let b64Str = btoa(combinedStr);
@@ -96,6 +110,9 @@
         
 
     </script>
+
+
+    <!------------------------------ CSS ------------------------------>
 
     <style>
 

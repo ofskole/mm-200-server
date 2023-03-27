@@ -8,6 +8,8 @@
 
 <body>
 
+    <!------------------------------ HTML ------------------------------>
+
     <div id="container">
         <h1 id="h1"></h1>
         <button id="btnProfile"></button>
@@ -30,7 +32,12 @@
     </div>
 
 
+    <!------------------------------ JavaScript ------------------------------>
+
+
     <script>
+
+        // Variables//language//buttons//eventlisteners/placeholders
 
         let heading = localStorage.getItem("title");
         let text = localStorage.getItem("details");
@@ -80,6 +87,8 @@
         container.appendChild(h2);
 
 
+        // edit item is run when the edit button is clicked. It sends a POST request to the server with the new data for the item.
+
         async function editItem() {
 
             try{
@@ -101,7 +110,7 @@
                 })
             });
 
-            let data = await response.json();
+            let data = await response.json(); //received answer
 
             if (response.status != 200) {
                 h2.innerHTML = "Error: " + data.error;
@@ -109,7 +118,7 @@
                 return;
             }
 
-            h2.innerHTML = "Item edited!";
+            h2.innerHTML = "Item edited!"; //ITem was edited, redirect to profile
             container.appendChild(h2);
             window.location.href = "/profile.html";
         }
@@ -122,6 +131,9 @@
 
 
     </script>
+
+
+    <!------------------------------ CSS ------------------------------>
 
 <style>
 

@@ -8,6 +8,8 @@
 
 <body>
 
+    <!------------------------------ HTML ------------------------------>
+
     <div id="container">
         <h1 id="h1"></h1>
         <h2 id="h2"></h2>
@@ -15,7 +17,11 @@
     </div>
 
 
+    <!------------------------------ JavaScript ------------------------------>
+
     <script>
+
+        //variables, language, token, buttons
 
         let languageData = localStorage.getItem("language");
         let language = JSON.parse(languageData);
@@ -32,6 +38,10 @@
             window.location.href = "/profile.html";
         });
 
+
+
+        //admin get public items
+
         async function getPublicItems() {
 
             try{
@@ -44,16 +54,16 @@
                     }
                 };
 
-                let response = await fetch(url,cfg);
-                let data = await response.json();
+                let response = await fetch(url,cfg); //get request with token/information from above.
+                let data = await response.json();//data from server
 
-                if (response.status != 200) {
+                if (response.status != 200) { //if error
                     h2.innerHTML = "Error: " + data.error;
                     container.appendChild(h2);
                     return;
                 }
 
-                data.forEach(row => {
+                data.forEach(row => { //if okay, display each item in a different div.
 
                     let today = new Date();
                     let date = new Date(row.date);
@@ -84,6 +94,9 @@
         getPublicItems();
 
 
+
+        //admin delete public item
+
         async function deleteItem(id) {
 
             try{
@@ -97,16 +110,16 @@
                     },
                     body: JSON.stringify({id: itemId})
                 };
-                let response = await fetch(url,cfg);
-                let data = await response.json();
+                let response = await fetch(url,cfg); //send delete request with token/information from above.
+                let data = await response.json();//answer
 
-                if (response.status != 200) {
+                if (response.status != 200) { //if error
                     h2.innerHTML = "Error: " + data.error;
                     container.appendChild(h2);
                     return;
                 }
 
-                location.reload();
+                location.reload(); //reloades the page if item was deleted.
 
             } catch (error) {
                 h2.innerHTML = "Error: " + error;
@@ -114,6 +127,9 @@
         }
 
     </script>
+
+
+    <!------------------------------ CSS ------------------------------>
 
     <style>
         @media (min-width: 768px) {

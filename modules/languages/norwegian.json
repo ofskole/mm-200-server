@@ -42,5 +42,6 @@
     "by": ", av: ",
 
     "nolistfound": "Ingen gjøremål funnet. Prøv å opprette et.",
-    "nodate": "Ingen forfallsdato satt."
+    "nodate": "Ingen forfallsdato satt.",
+    "usernameblank": "Brukernavn og passord må fylles inn."
 }

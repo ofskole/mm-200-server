@@ -1,16 +1,18 @@
+// ----------------------- Auth_utils module ----------------------- //
+
 const crypto = require("crypto");
 require("dotenv").config();
 
-const secret = process.env.SECRET;
+const secret = process.env.SECRET; //get secret from env file.
 
-let utils = {};
+let utils = {}; //create object to hold functions.
 
 
 
 
 utils.decodeCred = function (credString) {
 
-    let cred = {};
+    let cred = {}; //create object to hold username and password.
 
     let b64String = credString.replace("basic ", ""); //remove "basic " from string
 
@@ -20,19 +22,19 @@ utils.decodeCred = function (credString) {
 
     cred.password = asciiString.replace(cred.username + ":", ""); //extract password.
 
-    return cred;
+    return cred; //return object with username and password.
 
 }
 
 
 utils.createHash = function (password) {
 
-    let hash = {};
+    let hash = {}; //create object to hold salt and hash.
 
-    hash.salt = Math.random().toString();
-    hash.value = crypto.scryptSync(password, hash.salt, 64).toString('hex');
+    hash.salt = Math.random().toString(); //create random salt.
+    hash.value = crypto.scryptSync(password, hash.salt, 64).toString('hex'); //create hash from password and salt.
 
-    return hash;
+    return hash; //return object with salt and hash.
 
 }
 
@@ -47,31 +49,31 @@ utils.createToken = function (username, userID) {
 
     let openPart = b64part1 + "." + b64part2; //combine parts with a dot
 
-    let sign = crypto.createHmac('sha256', secret).update(openPart).digest("base64");
+    let sign = crypto.createHmac('sha256', secret).update(openPart).digest("base64"); //create signature
 
-    return openPart + "." + sign;
+    return openPart + "." + sign; //return token
 }
 
 
 
 utils.verifyToken = function (token) {
 
-    let tokenArr = token.split(".");
-    let openPart = tokenArr[0] + "." + tokenArr[1];
-    let signToCheck = tokenArr[2];
+    let tokenArr = token.split("."); //split token into 3 parts
+    let openPart = tokenArr[0] + "." + tokenArr[1]; //combine first 2 parts with a dot
+    let signToCheck = tokenArr[2]; //get signature to check
 
-    let sign = crypto.createHmac('sha256', secret).update(openPart).digest("base64");
+    let sign = crypto.createHmac('sha256', secret).update(openPart).digest("base64"); //create signature
 
-    if (signToCheck !== sign) {
-        return false;
+    if (signToCheck !== sign) { //check if signature is valid
+        return false; //token is invalid
     }
 
-    let payloadText = Buffer.from(tokenArr[1], "base64").toString("ascii");
-    let payload = JSON.parse(payloadText);
+    let payloadText = Buffer.from(tokenArr[1], "base64").toString("ascii"); //get payload as text
+    let payload = JSON.parse(payloadText); //get payload as object
 
     let expireTime = payload.iat + 1000 * 60 * 60; //expire time is 1 hour
 
-    if (expireTime < Date.now()) {
+    if (expireTime < Date.now()) { //check if token has expired
         return false;
     }
 
@@ -83,9 +85,9 @@ utils.verifyToken = function (token) {
 
 utils.verifyPassword = function (pswFromUser, hashFromDB, saltFromDB) {
 
-    hash = crypto.scryptSync(pswFromUser, saltFromDB, 64).toString("hex");
+    hash = crypto.scryptSync(pswFromUser, saltFromDB, 64).toString("hex"); //create hash from password and salt.
 
-    if (hash == hashFromDB) {
+    if (hash == hashFromDB) { //check if hash is valid
         return true;
     }
 

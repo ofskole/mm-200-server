@@ -8,6 +8,8 @@
 
 <body>
 
+    <!------------------------------ HTML ------------------------------>
+
     <div id="container">
         <h1 id="h1"></h1>
         <h2 id="h2"></h2>
@@ -15,7 +17,11 @@
     </div>
 
 
+    <!------------------------------ JavaScript ------------------------------>
+
     <script>
+
+        //variables, language, eventlisteners.
 
         let languageData = localStorage.getItem("language");
         let language = JSON.parse(languageData);
@@ -31,12 +37,15 @@
             window.location.href = "/profile.html";
         });
 
+
+        //get public items
+
         async function getPublicItems() {
 
             try{
                 let url = "/public";
                 let response = await fetch(url);
-                let data = await response.json();
+                let data = await response.json(); //get all items marked as public.
 
                 if (response.status != 200) {
                     h2.innerHTML = "Error: " + data.error;
@@ -44,7 +53,7 @@
                     return;
                 }
 
-                data.forEach(row => {
+                data.forEach(row => { //display all public items with information.
 
                     let today = new Date();
                     let date = new Date(row.date);
@@ -60,7 +69,7 @@
                         div.innerHTML += "<p>" + language.duedate + language.nodate + language.by + username +"</p>";
                     }
 
-                    if (date < today) {
+                    if (date < today) { //colors for dates
                         div.style.backgroundColor = "red";
                     } else if (today > date.setDate(date.getDate() - 3)) {
                         div.style.backgroundColor = "orange";
@@ -79,9 +88,12 @@
             }
         }
 
-        getPublicItems();
+        getPublicItems(); //calls function on site load.
 
     </script>
+
+
+    <!------------------------------ CSS ------------------------------>
 
 <style>
 

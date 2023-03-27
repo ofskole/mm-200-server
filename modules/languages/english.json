@@ -42,5 +42,6 @@
     "by": ", by: ",
 
     "nolistfound": "No list items found. Try making one.",
-    "nodate": "No due date set."
+    "nodate": "No due date set.",
+    "usernameblank": "Username and password are required."
 }

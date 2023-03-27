@@ -8,6 +8,8 @@
 
 <body>
 
+    <!------------------------------ HTML ------------------------------>
+
     <div>
         <h1 id="h1">Sign in to your ToDo List</h1>
         <button id ="english">English</button>
@@ -23,7 +25,11 @@
     </div>
 
 
+    <!------------------------------ JavaScript ------------------------------>
+
     <script>
+
+        //variables, language, buttons
 
         let inputUsername = document.getElementById("inputUsername");
         let inputPassword = document.getElementById("inputPassword");
@@ -52,6 +58,9 @@
         english.addEventListener('click', function() {
             getLanguage(this.id);
         });
+
+
+        // getLanguage function fetches chosen language from server
 
         async function getLanguage(Language) {
 
@@ -93,18 +102,19 @@
 
 
 
+        // login function
         
         btnLogin.addEventListener('click', async function(evt) {
 
             let language = localStorage.getItem("language");
 
-            if (language == null) {
+            if (language == null) { //checks if language is chosen. Sets english as default, if not.
                 chosenLanguage = "english";
                 getLanguage(chosenLanguage);
             }
 
             let url = "/users/login";
-            let credString = createCredentialString(inputUsername.value, inputPassword.value);
+            let credString = createCredentialString(inputUsername.value, inputPassword.value); //creates the credential string we send to server
 
             let cfg = {
                 method: "POST",
@@ -112,20 +122,20 @@
             };
 
             
-            if (inputUsername.value.includes(":")) {
+            if (inputUsername.value.includes(":")) { //checks, and displays error if username contains ":"
                 result.innerHTML = language.usernameerrorcolon;
                 return;
             }
 
             try {
-                let response = await fetch(url, cfg);
+                let response = await fetch(url, cfg);//send and receive data.
                 let data = await response.json();
 
                 if (response.status != 200) {
                     throw data.error;
                 }
 
-                localStorage.setItem("token", data.token);
+                localStorage.setItem("token", data.token);//saves token in local storage and redirects to profile page if login was successful.
                 window.location.href = "/profile.html";
             }
             catch(error) {
@@ -134,7 +144,7 @@
         });
 
 
-        
+        // createCredentialString function creates a string for login, username and password combined with ":". Encodes to base64 and adds "basic ".
 
         function createCredentialString(username, password) {
             let combinedStr = username + ":" + password;
@@ -145,6 +155,9 @@
 
 
     </script>
+
+
+    <!------------------------------ CSS ------------------------------>
 
     <style>
 

@@ -8,13 +8,19 @@
 
 <body>
 
+    <!------------------------------ HTML ------------------------------>
+
     <div id="container">
         <h1 id="h1"></h1>
         <h2 id="h2"></h2>
     </div>
 
 
+    <!------------------------------ JavaScript ------------------------------>
+
     <script>
+
+        //variables, language, eventlisteners.
 
         let languageData = localStorage.getItem("language");
         let language = JSON.parse(languageData);
@@ -42,7 +48,10 @@
 
         button.addEventListener("click", function() {
                 window.location.href = "/newItem.html";
-            });
+        });
+            
+
+        //get user info
 
         async function getUserInfo() {
 
@@ -57,19 +66,19 @@
                 }
             };
 
-            let response = await fetch(url, cfg);
-            let data = await response.json();
+            let response = await fetch(url, cfg); //get request with token/information from above.
+            let data = await response.json();//data from server
 
-            if (response.status != 200) {
+            if (response.status != 200) { //if error, display error message.
                 h2.innerHTML = "Error: " + data.error;
                 container.appendChild(h2);
                 return;
             }
 
-            h1.innerHTML = language.profileh1 + data.user + "!";
+            h1.innerHTML = language.profileh1 + data.user + "!"; //display username and welcome message in chosen language.
 
 
-            let role = data.role;
+            let role = data.role; //checks if user role is admin. Displays moderation button instead of public button if true.
 
             if (role == "admin") {
                 let adminButton = document.createElement("button");
@@ -90,7 +99,7 @@
                 });
             }
 
-            getUserList();
+            getUserList(); //calls function to get user list.
 
         }
             
@@ -100,9 +109,11 @@
             }
         }
         
-        getUserInfo();
+        getUserInfo(); //calls function to get user info when page loads.
 
 
+
+        //get user list
 
         async function getUserList() {
 
@@ -117,19 +128,19 @@
                     }
                 };
 
-                let response = await fetch(url, cfg);
-                let data = await response.json();
+                let response = await fetch(url, cfg); //get request with token/information from above.
+                let data = await response.json(); //data from server
 
-                if (response.status != 200) {
+                if (response.status != 200) { //if error, display error message.
                     h2.innerHTML = language.nolistfound;
                     container.appendChild(h2);
                     return;
                 } else {
-                    h2.innerHTML = language.profileh2;
+                    h2.innerHTML = language.profileh2; //display h2 message in chosen language.
                     container.appendChild(h2);
                 }
 
-                data.forEach(row => {
+                data.forEach(row => { //for each row in data, create a div with the information from the row.
 
                     let today = new Date();
                     let date = new Date(row.date);
@@ -147,10 +158,10 @@
                     } else {
                         div.innerHTML += "<p>" + language.duedate + language.nodate + "</p>";
                     }
-                    div.appendChild(btnDelete);
+                    div.appendChild(btnDelete); //add buttons to edit and delete your own posts.
                     div.appendChild(btnEdit);
 
-                    if (date < today && row.public != "completed") {
+                    if (date < today && row.public != "completed") { //colors for due dates.
                         div.style.backgroundColor = "red";
                     } else if (row.public == "completed") {
                         div.style.backgroundColor = "green";
@@ -163,7 +174,7 @@
                     }
                     container.appendChild(div);
 
-                    btnEdit.addEventListener('click', function(evt) {
+                    btnEdit.addEventListener('click', function(evt) { //edit button stores information in local storage and redirects to edit page.
                         localStorage.setItem("title", row.heading);
                         localStorage.setItem("details", row.details);
                         localStorage.setItem("date", localDate);
@@ -171,7 +182,7 @@
                         window.location.href = "/editItem.html";
                     });
 
-                    btnDelete.addEventListener('click', function(evt) {
+                    btnDelete.addEventListener('click', function(evt) { //stores list item id and calls delete function.
                         let id = row.id;
                         deleteItem(id);
                     });
@@ -186,6 +197,7 @@
 
 
 
+        //delete item
 
         async function deleteItem(id) {
                 
@@ -204,15 +216,15 @@
                         })
                     };
     
-                    let response = await fetch(url, cfg);
+                    let response = await fetch(url, cfg); //delete to server with token/information(list item ID) from above.
                     let data = await response.json();
     
-                    if (response.status != 200) {
+                    if (response.status != 200) { //if error, display error message.
                         h2.innerHTML = "Error: " + data.error;
                         container.appendChild(h2);
                         return;
                     }
-                    window.location.href = "/profile.html";
+                    window.location.href = "/profile.html"; // if successful, reload page.
     
                 }
                     
@@ -224,6 +236,9 @@
 
 
     </script>
+
+
+      <!------------------------------ CSS ------------------------------>
 
     <style>
 
